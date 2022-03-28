@@ -1,6 +1,7 @@
 package com.architecture.hexagonal.transaction.adapters.outbound.persistence.h2;
 
 import com.architecture.hexagonal.transaction.adapters.infra.dto.TransactionDTO;
+import com.architecture.hexagonal.transaction.adapters.infra.error.exceptions.BadRequestException;
 import com.architecture.hexagonal.transaction.adapters.outbound.persistence.h2.entity.TransactionEntity;
 import com.architecture.hexagonal.transaction.adapters.outbound.persistence.h2.repository.TransactionRepository;
 import com.architecture.hexagonal.transaction.application.domain.TransactionDomain;
@@ -25,8 +26,8 @@ public class H2Persistence implements TransactionPersistencePort {
 
     @Override
     public TransactionDomain get(Integer id) {
-        var transaction = transactionRepository.findById(id);
-        return new TransactionDomain(transaction.get().getId(), transaction.get().getValue());
+        var transaction = transactionRepository.findById(id).orElseThrow( () -> new BadRequestException("Transaction not found"));
+        return new TransactionDomain(transaction.getId(), transaction.getValue());
     }
 
     @Override
